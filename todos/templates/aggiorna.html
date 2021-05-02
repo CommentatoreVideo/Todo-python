@@ -44,14 +44,29 @@
       <button type="submit" class="btn btn-primary">Aggiorna</button>
     </form>
     {% else %}
-    <form action="{% url 'creaCategoria' %}" method="POST">
+    <form action="{% url 'aggiornaCategoria2' %}" method="POST">
     {% csrf_token %}
+    <select name="indice" class="form-control">
+      {% for categoria in categorie %}
+        <option value="{{categoria.id}}">{{categoria.nome}}</option>
+      {% endfor %}
+      </select>
       <div class="form-group">
         <label>Inserisci il nome della categoria</label>
-        <input type="text" class="form-control" name="nome" value="{{nome}}">
+        <input type="text" class="form-control" name="nome">
       </div>
-      <button type="submit" class="btn btn-primary">Crea</button>
+      <button type="submit" class="btn btn-primary">Aggiorna</button>
     </form>
+    <form action="{% url 'eliminaCategoria' %}" method="POST">
+      {% csrf_token %}
+      <select name="indice" class="form-control">
+        {% for categoria in categorie %}
+          <option value="{{categoria.id}}">{{categoria.nome}}</option>
+        {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-danger">Elimina</button>
+        <p>Attenzione! Eliminando la categoria tutti i todo associati verranno eliminati. Sei sicuro di voler continuare?</p>
+      </form>
     {% endif %}
   </div>
 

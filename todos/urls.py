@@ -13,5 +13,8 @@ urlpatterns = [
     path('eliminaTodo',views.eliminaTodo,name="eliminaTodo"),
     path('aggiornaTodo',views.aggiornaTodo,name="aggiornaTodo"),
     path('aggiornaTodo2',views.aggiornaTodo2,name="aggiornaTodo2"),
+    path('aggiornaCategoria',views.aggiornaCategorie,name="aggiornaCategoria"),
+    path('aggiornaCategoria2',views.aggiornaCategorie2,name="aggiornaCategoria2"),
+    path('eliminaCategoria',views.eliminaCategoria,name="eliminaCategoria"),
     path('api/',include(router.urls))
 ]
