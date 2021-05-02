@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  <title>Todos</title>
+</head>
+
+<body>
+  <div class="container-fluid">
+    {%include "navbar.html"%}
+    <h1 id="h1Scegli">Seleziona una categoria</h1>
+    {% for todo in todos %}
+    <div class="col-xl-3 col-md-6 carta" categoria="{{todo.categoria.nome}}">
+      <div class="card bg-primary text-white mb-4">
+        <div class="card-body">{{todo.titolo}}</div>
+        <div class="card-footer d-flex align-items-center justify-content-between">
+          <a class="small text-white stretched-link" href="#">Apri</a>
+          <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    <div id="dialog" title="">
+      <h3 id="lblTitolo"></h3>
+      <p id="lblDescrizione"></p>
+      <p id="lblAutore"></p>
+      <p id="lblCategoria"></p>
+      <div class="row">
+        <div class="col">
+          <form action="/aggiornaTodo" method="post">
+          {% csrf_token %}
+          <input type="hidden" class="idTodo" name="idTodo">
+          <input type="submit" class="btn btn-warning" value="Modifica" id="btnModifica">
+          </form>
+        </div>
+        <div class="col">
+          <form action="/eliminaTodo" method="post">
+          {% csrf_token %}
+          <input type="hidden" class="idTodo" name="idTodo">
+          <input type="submit" class="btn btn-danger" value="Elimina" id="btnElimina">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery and Bootstrap Bundle (includes Popper) -->
+  <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+  
+  <script defer>
+    let tutti;
+    let utente="{{autore}}";
+    $( function() {
+      $("#dialog").dialog({
+        autoOpen:false
+      });
+    });
+    //$(".carta").hide();
+    $(".linkCategoria").click(function() {
+      let nome=$(this).text();
+      let ok=false;
+      $(".carta").each((i,e)=>{
+        if($(e).attr("categoria")==nome) {
+          $(e).show();
+          ok=true;
+        }
+      });
+      if(ok)
+      $("#h1Scegli").remove();
+    });
+    $(".carta").click(function() {
+      testo=$(this).children().eq(0).children().filter(".card-body").text();
+      if(tutti!=undefined) {
+        for(let todo of tutti) {
+          if(todo.titolo==testo) {
+            let {titolo, descrizione, autore, id}=todo;
+            $("#lblTitolo").text(titolo);
+            $("#lblDescrizione").text(descrizione);
+            $("#lblAutore").text(autore);
+            $(".idTodo").val(id);
+            if(autore==utente) {
+              $("#btnElimina").show();
+              $("#btnModifica").show();
+            } else {
+              $("#btnElimina").hide();
+              $("#btnModifica").hide();
+            }
+            $("#dialog").dialog("open");
+            return;
+          }
+        }
+      }
+      fetch("api/todos/?format=json").then(d=>d.json())
+      .then(data=>{
+        tutti=data;
+        for(let todo of tutti) {
+          if(todo.titolo==testo) {
+            let {titolo, descrizione, autore, id}=todo;
+            $("#lblTitolo").text(titolo);
+            $("#lblDescrizione").text(descrizione);
+            $("#lblAutore").text(autore);
+            $(".idTodo").val(id);
+            if(autore==utente) {
+              $("#btnElimina").show();
+              $("#btnModifica").show();
+            } else {
+              $("#btnElimina").hide();
+              $("#btnModifica").hide();
+            }
+            $("#dialog").dialog("open");
+            return;
+          }
+        }
+      });
+    });
+  </script>
+  
+</body>
+
+</html>
